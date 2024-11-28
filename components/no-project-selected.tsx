@@ -1,19 +1,18 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 import NoProjectsImage from "@/app/images/no-projects.png";
 import { Button } from "@/components/ui";
+import { ProjectsContext } from "@/store/projects";
 
 interface IProps {
 	className?: string;
-	onNewProjectClick?: () => void;
 }
 
-export const NoProjectSelected: FC<IProps> = ({
-	className,
-	onNewProjectClick,
-}) => {
+export const NoProjectSelected: FC<IProps> = ({ className }) => {
+	const { newProjectClickHandler } = useContext(ProjectsContext);
+
 	return (
 		<div className={cn("mt-24 text-center", className)}>
 			<Image
@@ -30,7 +29,7 @@ export const NoProjectSelected: FC<IProps> = ({
 				Select a project or get started with a new one
 			</p>
 			<p className="mt-8">
-				<Button onClick={onNewProjectClick}>Create new project</Button>
+				<Button onClick={newProjectClickHandler}>Create new project</Button>
 			</p>
 		</div>
 	);

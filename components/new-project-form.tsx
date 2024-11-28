@@ -1,29 +1,35 @@
-import { FC, MouseEvent, useRef } from "react";
+import { FC, FormEvent, useContext, useRef } from "react";
 import { nanoid } from "nanoid";
 
 import { cn } from "@/lib/utils";
 import { Button, Input } from "@/components/ui";
-import { IProject } from "@/app/page";
 import { IModal, Modal } from "@/components/modal";
+import { ProjectsContext } from "@/store/projects";
+import { Task } from "@/components/new-task-form";
+
+export interface IProject {
+	id: string;
+	title: string;
+	description: string;
+	dueDate: string;
+	tasks: Task[];
+}
 
 interface IProps {
 	className?: string;
-	onSaveClick: (project: IProject) => void;
-	onCancelClick: () => void;
 }
 
-export const NewProjectForm: FC<IProps> = ({
-	className,
-	onSaveClick,
-	onCancelClick,
-}) => {
+export const NewProjectForm: FC<IProps> = ({ className }) => {
+	const { saveNewProjectHandler, cancelProjectHandler } =
+		useContext(ProjectsContext);
+
 	const title = useRef<HTMLInputElement>(null);
 	const description = useRef<HTMLInputElement>(null);
 	const dueDate = useRef<HTMLInputElement>(null);
 
 	const modal = useRef<IModal | null>(null);
 
-	const onSaveButtonClickHandler = (evt: MouseEvent<HTMLButtonElement>) => {
+	const formSubmitHandler = (evt: FormEvent) => {
 		evt.preventDefault();
 
 		if (
@@ -35,7 +41,7 @@ export const NewProjectForm: FC<IProps> = ({
 			return;
 		}
 
-		onSaveClick({
+		saveNewProjectHandler({
 			id: nanoid(8),
 			title: title.current!.value,
 			description: description.current!.value,
@@ -56,15 +62,22 @@ export const NewProjectForm: FC<IProps> = ({
 				</p>
 			</Modal>
 
-			<form className={cn("w-full max-w-xl", className)}>
+			<form
+				className={cn("w-full max-w-xl", className)}
+				onSubmit={formSubmitHandler}
+			>
 				<ul className="flex items-center justify-end gap-4 my-4">
 					<li>
-						<Button variant="secondary" onClick={onCancelClick}>
+						<Button
+							type="button"
+							variant="secondary"
+							onClick={cancelProjectHandler}
+						>
 							Cancel
 						</Button>
 					</li>
 					<li>
-						<Button onClick={onSaveButtonClickHandler}>Save</Button>
+						<Button type="submit">Save</Button>
 					</li>
 				</ul>
 				<div className="flex flex-col gap-4">

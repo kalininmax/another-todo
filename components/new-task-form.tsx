@@ -1,8 +1,9 @@
-import { ChangeEvent, FC, MouseEvent, useState } from "react";
+import { ChangeEvent, FC, MouseEvent, useContext, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button, Input } from "./ui";
 import { nanoid } from "nanoid";
+import { ProjectsContext } from "@/store/projects";
 
 export interface Task {
 	id: string;
@@ -10,11 +11,11 @@ export interface Task {
 }
 interface IProps {
 	className?: string;
-	onAddTaskClick: (task: Task) => void;
 }
 
-export const NewTaskForm: FC<IProps> = ({ className, onAddTaskClick }) => {
+export const NewTaskForm: FC<IProps> = ({ className }) => {
 	const [newTask, setNewTask] = useState<Task | null>(null);
+	const { addTaskHandler } = useContext(ProjectsContext);
 
 	const inputChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
 		setNewTask({ id: nanoid(8), text: evt.target.value });
@@ -27,7 +28,7 @@ export const NewTaskForm: FC<IProps> = ({ className, onAddTaskClick }) => {
 			return;
 		}
 
-		onAddTaskClick(newTask);
+		addTaskHandler(newTask);
 		setNewTask(null);
 	};
 

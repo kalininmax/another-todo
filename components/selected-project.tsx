@@ -1,29 +1,20 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 
-import { IProject } from "@/app/page";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui";
 import { TasksList } from "./tasks-list";
-import { Task } from "./new-task-form";
+import { ProjectsContext } from "@/store/projects";
 
 interface IProps {
 	className?: string;
-	projectId: IProject["id"];
-	projects: IProject[];
-	onDeleteClick: (projectId: IProject["id"]) => void;
-	onAddTaskClick: (task: Task) => void;
-	onDeleteTaskClick: (taskId: Task["id"]) => void;
 }
 
-export const SelectedProject: FC<IProps> = ({
-	className,
-	projectId,
-	projects,
-	onDeleteClick,
-	onAddTaskClick,
-	onDeleteTaskClick,
-}) => {
-	const project = projects.find((project) => project.id === projectId) || null;
+export const SelectedProject: FC<IProps> = ({ className }) => {
+	const { projects, currentProjectId, deleteProjectHandler } =
+		useContext(ProjectsContext);
+
+	const project =
+		projects.find((project) => project.id === currentProjectId) || null;
 
 	if (!project) {
 		return null;
@@ -44,7 +35,7 @@ export const SelectedProject: FC<IProps> = ({
 					</p>
 					<Button
 						variant="destructive"
-						onClick={() => onDeleteClick(project.id)}
+						onClick={() => deleteProjectHandler(project.id)}
 					>
 						Delete
 					</Button>
@@ -54,11 +45,7 @@ export const SelectedProject: FC<IProps> = ({
 					{project.description}
 				</p>
 			</header>
-			<TasksList
-				onAddTaskClick={onAddTaskClick}
-				onDeleteTaskClick={onDeleteTaskClick}
-				tasks={project.tasks}
-			/>
+			<TasksList tasks={project.tasks} />
 		</div>
 	);
 };
